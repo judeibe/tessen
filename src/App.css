@@ -1,0 +1,37 @@
+.app-layout {
+  height: 100%;
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+}
+
+.app-layout__header {
+  border-bottom: 1px solid var(--border);
+  padding: 16px;
+  text-align: left;
+}
+
+.app-layout__body {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: 260px minmax(0, 1fr) 340px;
+}
+
+.app-layout__palette,
+.app-layout__config {
+  border-right: 1px solid var(--border);
+  padding: 16px;
+  overflow: auto;
+  text-align: left;
+}
+
+.app-layout__config {
+  border-right: none;
+  border-left: 1px solid var(--border);
+}
+
+.app-layout__canvas {
+  min-height: 540px;
+  height: 100%;
+}
