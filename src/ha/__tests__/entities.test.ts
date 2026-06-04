@@ -11,9 +11,9 @@ import { describe, expect, it, vi } from 'vitest'
 import { getAllEntities, subscribeToEntities } from '../entities'
 
 vi.mock('home-assistant-js-websocket', async () => {
-  const actual = await vi.importActual<typeof import('home-assistant-js-websocket')>(
-    'home-assistant-js-websocket',
-  )
+  const actual = await vi.importActual<
+    typeof import('home-assistant-js-websocket')
+  >('home-assistant-js-websocket')
 
   return {
     ...actual,
@@ -25,7 +25,7 @@ vi.mock('home-assistant-js-websocket', async () => {
 const createHassEntity = (
   entityId: string,
   state: string,
-  attributes: Record<string, unknown>,
+  attributes: Record<string, unknown>
 ): HassEntity =>
   ({
     entity_id: entityId,

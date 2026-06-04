@@ -24,10 +24,12 @@ describe('ImportAutomationModal', () => {
         loadError={null}
         onSelect={onSelect}
         onClose={vi.fn()}
-      />,
+      />
     )
 
-    await user.click(screen.getByRole('button', { name: 'Import Morning routine' }))
+    await user.click(
+      screen.getByRole('button', { name: 'Import Morning routine' })
+    )
 
     expect(onSelect).toHaveBeenCalledWith('automation.morning_routine')
   })
@@ -43,7 +45,7 @@ describe('ImportAutomationModal', () => {
         loadError={null}
         onSelect={vi.fn()}
         onClose={onClose}
-      />,
+      />
     )
 
     fireEvent.keyDown(document, { key: 'Escape' })
@@ -60,7 +62,7 @@ describe('ImportAutomationModal', () => {
         loadError={null}
         onSelect={vi.fn()}
         onClose={vi.fn()}
-      />,
+      />
     )
 
     expect(await axe(container)).toHaveNoViolations()

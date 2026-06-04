@@ -1,6 +1,10 @@
 import { useMemo, useState } from 'react'
 
-import { ACTION_TYPES, CONDITION_TYPES, TRIGGER_PLATFORMS } from '../../shared/constants'
+import {
+  ACTION_TYPES,
+  CONDITION_TYPES,
+  TRIGGER_PLATFORMS,
+} from '../../shared/constants'
 import type {
   ActionNodeData,
   ConditionNodeData,
@@ -28,7 +32,11 @@ export interface NodeConfigPanelProps {
 }
 
 function isNumberSelector(field: HAService['fields'][string]): boolean {
-  return Boolean(field.selector && typeof field.selector === 'object' && 'number' in field.selector)
+  return Boolean(
+    field.selector &&
+    typeof field.selector === 'object' &&
+    'number' in field.selector
+  )
 }
 
 export function NodeConfigPanel({
@@ -43,8 +51,10 @@ export function NodeConfigPanel({
 }: NodeConfigPanelProps) {
   const config = nodeData.config
   const entityListId = `node-entities-${nodeId}`
-  const triggerData = nodeType === 'trigger' ? (nodeData as TriggerNodeData) : null
-  const conditionData = nodeType === 'condition' ? (nodeData as ConditionNodeData) : null
+  const triggerData =
+    nodeType === 'trigger' ? (nodeData as TriggerNodeData) : null
+  const conditionData =
+    nodeType === 'condition' ? (nodeData as ConditionNodeData) : null
   const actionData = nodeType === 'action' ? (nodeData as ActionNodeData) : null
 
   const updateConfig = (nextConfig: Record<string, unknown>) => {
@@ -62,10 +72,15 @@ export function NodeConfigPanel({
   }
 
   const selectedServiceKey =
-    nodeType === 'action' && typeof config.service === 'string' ? config.service : ''
+    nodeType === 'action' && typeof config.service === 'string'
+      ? config.service
+      : ''
   const selectedService =
     nodeType === 'action'
-      ? services.find((service) => `${service.domain}.${service.service}` === selectedServiceKey)
+      ? services.find(
+          (service) =>
+            `${service.domain}.${service.service}` === selectedServiceKey
+        )
       : undefined
 
   const knownConfigKeys = useMemo(() => {
@@ -89,9 +104,9 @@ export function NodeConfigPanel({
   const unknownConfigObject = useMemo(
     () =>
       Object.fromEntries(
-        Object.entries(config).filter(([key]) => !knownConfigKeys.has(key)),
+        Object.entries(config).filter(([key]) => !knownConfigKeys.has(key))
       ),
-    [config, knownConfigKeys],
+    [config, knownConfigKeys]
   )
 
   const [unknownJsonError, setUnknownJsonError] = useState<string | null>(null)
@@ -102,7 +117,7 @@ export function NodeConfigPanel({
     if (!value.trim()) {
       setUnknownJsonError(null)
       const knownEntries = Object.fromEntries(
-        Object.entries(config).filter(([key]) => knownConfigKeys.has(key)),
+        Object.entries(config).filter(([key]) => knownConfigKeys.has(key))
       )
       updateConfig(knownEntries)
       return
@@ -116,7 +131,7 @@ export function NodeConfigPanel({
       }
 
       const knownEntries = Object.fromEntries(
-        Object.entries(config).filter(([key]) => knownConfigKeys.has(key)),
+        Object.entries(config).filter(([key]) => knownConfigKeys.has(key))
       )
       updateConfig({
         ...knownEntries,
@@ -166,7 +181,9 @@ export function NodeConfigPanel({
           Trigger Platform
           <select
             value={triggerData.platform}
-            onChange={(event) => onChange(nodeId, { platform: event.target.value })}
+            onChange={(event) =>
+              onChange(nodeId, { platform: event.target.value })
+            }
           >
             {TRIGGER_PLATFORMS.map((platform) => (
               <option key={platform} value={platform}>
@@ -182,7 +199,9 @@ export function NodeConfigPanel({
           Condition Type
           <select
             value={conditionData.condition}
-            onChange={(event) => onChange(nodeId, { condition: event.target.value })}
+            onChange={(event) =>
+              onChange(nodeId, { condition: event.target.value })
+            }
           >
             {CONDITION_TYPES.map((condition) => (
               <option key={condition} value={condition}>
@@ -199,7 +218,9 @@ export function NodeConfigPanel({
             Action Type
             <select
               value={actionData.action}
-              onChange={(event) => onChange(nodeId, { action: event.target.value })}
+              onChange={(event) =>
+                onChange(nodeId, { action: event.target.value })
+              }
             >
               {ACTION_TYPES.map((actionType) => (
                 <option key={actionType} value={actionType}>
@@ -213,7 +234,9 @@ export function NodeConfigPanel({
             Service
             <select
               value={selectedServiceKey}
-              onChange={(event) => updateConfigField('service', event.target.value)}
+              onChange={(event) =>
+                updateConfigField('service', event.target.value)
+              }
             >
               <option value="">Select a service</option>
               {services.map((service) => {
@@ -230,39 +253,41 @@ export function NodeConfigPanel({
           {selectedService ? (
             <fieldset style={{ marginBottom: 10 }}>
               <legend>Service Fields</legend>
-              {Object.entries(selectedService.fields).map(([fieldName, field]) => {
-                const numberField = isNumberSelector(field)
-                const value = config[fieldName]
+              {Object.entries(selectedService.fields).map(
+                ([fieldName, field]) => {
+                  const numberField = isNumberSelector(field)
+                  const value = config[fieldName]
 
-                return (
-                  <label
-                    key={fieldName}
-                    style={{ display: 'grid', gap: 4, marginBottom: 8 }}
-                  >
-                    {field.name ?? fieldName}
-                    <input
-                      type={numberField ? 'number' : 'text'}
-                      value={
-                        typeof value === 'number' || typeof value === 'string'
-                          ? String(value)
-                          : ''
-                      }
-                      onChange={(event) => {
-                        const nextValue = event.target.value
-                        if (numberField) {
-                          updateConfigField(
-                            fieldName,
-                            nextValue === '' ? undefined : Number(nextValue),
-                          )
-                          return
+                  return (
+                    <label
+                      key={fieldName}
+                      style={{ display: 'grid', gap: 4, marginBottom: 8 }}
+                    >
+                      {field.name ?? fieldName}
+                      <input
+                        type={numberField ? 'number' : 'text'}
+                        value={
+                          typeof value === 'number' || typeof value === 'string'
+                            ? String(value)
+                            : ''
                         }
-                        updateConfigField(fieldName, nextValue)
-                      }}
-                      placeholder={field.description}
-                    />
-                  </label>
-                )
-              })}
+                        onChange={(event) => {
+                          const nextValue = event.target.value
+                          if (numberField) {
+                            updateConfigField(
+                              fieldName,
+                              nextValue === '' ? undefined : Number(nextValue)
+                            )
+                            return
+                          }
+                          updateConfigField(fieldName, nextValue)
+                        }}
+                        placeholder={field.description}
+                      />
+                    </label>
+                  )
+                }
+              )}
             </fieldset>
           ) : null}
         </>
@@ -274,8 +299,14 @@ export function NodeConfigPanel({
           <input
             type="text"
             list={entityListId}
-            value={typeof config[entityConfigKey] === 'string' ? config[entityConfigKey] : ''}
-            onChange={(event) => updateConfigField(entityConfigKey, event.target.value)}
+            value={
+              typeof config[entityConfigKey] === 'string'
+                ? config[entityConfigKey]
+                : ''
+            }
+            onChange={(event) =>
+              updateConfigField(entityConfigKey, event.target.value)
+            }
             placeholder="Search entities"
           />
           <datalist id={entityListId}>

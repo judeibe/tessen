@@ -36,7 +36,7 @@ function mapEntities(entities: HassEntities): Record<string, HAEntity> {
     Object.entries(entities).map(([entityId, entity]) => [
       entityId,
       mapEntity(entity),
-    ]),
+    ])
   )
 }
 
@@ -45,13 +45,15 @@ export async function getAllEntities(conn: Connection): Promise<HAEntity[]> {
     const states = await getStates(conn)
     return states.map(mapEntity)
   } catch (error) {
-    throw new Error('Failed to fetch Home Assistant entities.', { cause: error })
+    throw new Error('Failed to fetch Home Assistant entities.', {
+      cause: error,
+    })
   }
 }
 
 export function subscribeToEntities(
   conn: Connection,
-  callback: (entities: Record<string, HAEntity>) => void,
+  callback: (entities: Record<string, HAEntity>) => void
 ): UnsubscribeFunc {
   return subscribeEntities(conn, (entities) => {
     callback(mapEntities(entities))

@@ -1,4 +1,10 @@
-import type { Edge, EdgeChange, Node, NodeChange, XYPosition } from '@xyflow/react'
+import type {
+  Edge,
+  EdgeChange,
+  Node,
+  NodeChange,
+  XYPosition,
+} from '@xyflow/react'
 
 export type AutomationMode = 'single' | 'restart' | 'queued' | 'parallel'
 export type FlowNodeType = 'trigger' | 'condition' | 'action'
@@ -75,9 +81,9 @@ export interface HAAutomationYAML {
   alias: string
   description?: string
   mode?: AutomationMode
-  trigger: Record<string, unknown>[]
-  condition?: Record<string, unknown>[]
-  action: Record<string, unknown>[]
+  triggers: Record<string, unknown>[]
+  conditions?: Record<string, unknown>[]
+  actions: Record<string, unknown>[]
   [key: string]: unknown
 }
 

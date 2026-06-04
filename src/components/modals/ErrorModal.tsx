@@ -28,8 +28,8 @@ const dialogStyle = {
 function getFocusableElements(container: HTMLElement): HTMLElement[] {
   return Array.from(
     container.querySelectorAll<HTMLElement>(
-      'button,[href],input,select,textarea,[tabindex]:not([tabindex="-1"])',
-    ),
+      'button,[href],input,select,textarea,[tabindex]:not([tabindex="-1"])'
+    )
   ).filter((element) => !element.hasAttribute('disabled'))
 }
 
@@ -122,7 +122,14 @@ export function ErrorModal({
         </h2>
         <p>{message}</p>
 
-        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, marginTop: 16 }}>
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'flex-end',
+            gap: 8,
+            marginTop: 16,
+          }}
+        >
           {onRetry ? (
             <button type="button" onClick={onRetry}>
               Retry

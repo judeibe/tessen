@@ -58,8 +58,8 @@ const itemButtonStyle = {
 function getFocusableElements(container: HTMLElement): HTMLElement[] {
   return Array.from(
     container.querySelectorAll<HTMLElement>(
-      'button,[href],input,select,textarea,[tabindex]:not([tabindex="-1"])',
-    ),
+      'button,[href],input,select,textarea,[tabindex]:not([tabindex="-1"])'
+    )
   ).filter((element) => !element.hasAttribute('disabled'))
 }
 
@@ -194,7 +194,9 @@ export function ImportAutomationModal({
                     style={{
                       ...itemButtonStyle,
                       borderBottom:
-                        index === automations.length - 1 ? 'none' : itemButtonStyle.borderBottom,
+                        index === automations.length - 1
+                          ? 'none'
+                          : itemButtonStyle.borderBottom,
                     }}
                     onClick={() => onSelect(automation.id)}
                     disabled={isLoading}
@@ -220,7 +222,9 @@ export function ImportAutomationModal({
           </ul>
         ) : null}
 
-        <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 4 }}>
+        <div
+          style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 4 }}
+        >
           <button type="button" onClick={onClose}>
             Close
           </button>

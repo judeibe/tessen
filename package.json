@@ -10,7 +10,8 @@
     "lint:fix": "eslint . --fix",
     "test": "vitest run",
     "typecheck": "tsc -b",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "format": "prettier --write ."
   },
   "dependencies": {
     "@xyflow/react": "^12.11.0",

@@ -26,7 +26,8 @@ import './App.css'
 
 const DEFAULT_NODE_POSITION = { x: 320, y: 200 }
 const HA_URL = (import.meta.env.VITE_HA_URL as string | undefined)?.trim() ?? ''
-const HA_TOKEN = (import.meta.env.VITE_HA_TOKEN as string | undefined)?.trim() ?? ''
+const HA_TOKEN =
+  (import.meta.env.VITE_HA_TOKEN as string | undefined)?.trim() ?? ''
 
 function createEmptyFlow(): AutomationFlow {
   return {
@@ -78,17 +79,17 @@ function App() {
 
   const canUndo = useStore(
     useFlowStore.temporal,
-    (state) => state.pastStates.length > 0,
+    (state) => state.pastStates.length > 0
   )
   const canRedo = useStore(
     useFlowStore.temporal,
-    (state) => state.futureStates.length > 0,
+    (state) => state.futureStates.length > 0
   )
 
   const [isSaving, setIsSaving] = useState(false)
-  const [entities, setEntities] = useState<
-    import('./shared/types').HAEntity[]
-  >([])
+  const [entities, setEntities] = useState<import('./shared/types').HAEntity[]>(
+    []
+  )
   const [services, setServices] = useState<
     import('./shared/types').HAService[]
   >([])
@@ -140,7 +141,7 @@ function App() {
     } catch (error) {
       const message = getErrorMessage(
         error,
-        'Failed to connect to Home Assistant and load metadata.',
+        'Failed to connect to Home Assistant and load metadata.'
       )
       setSaveError(message)
       setErrorModalState({
@@ -192,14 +193,17 @@ function App() {
   }, [nodes, selectedNodeId])
   const knownEntityIds = useMemo(
     () => new Set(entities.map((entity) => entity.entity_id)),
-    [entities],
+    [entities]
   )
 
   const handleAddNode = useCallback(
-    (type: 'trigger' | 'condition' | 'action', position?: { x: number; y: number }) => {
+    (
+      type: 'trigger' | 'condition' | 'action',
+      position?: { x: number; y: number }
+    ) => {
       addNode(type, position ?? DEFAULT_NODE_POSITION)
     },
-    [addNode],
+    [addNode]
   )
 
   const handleSave = useCallback(async () => {
@@ -209,7 +213,8 @@ function App() {
     }
 
     if (!connection) {
-      const message = 'Home Assistant is not connected. Retry after reconnecting.'
+      const message =
+        'Home Assistant is not connected. Retry after reconnecting.'
       setSaveError(message)
       setErrorModalState({
         isOpen: true,
@@ -222,7 +227,9 @@ function App() {
 
     const validationResult = validateFlow(flow)
     if (!validationResult.valid) {
-      setSaveError(validationResult.errors.map((error) => error.message).join(' '))
+      setSaveError(
+        validationResult.errors.map((error) => error.message).join(' ')
+      )
       return
     }
 
@@ -239,7 +246,7 @@ function App() {
       })
 
       const invalidSection = Object.entries(configValidation).find(
-        ([, result]) => !result.valid,
+        ([, result]) => !result.valid
       )
 
       if (invalidSection) {
@@ -250,7 +257,12 @@ function App() {
         throw new Error(validationMessage)
       }
 
-      const saveResult = await saveAutomation(HA_URL, HA_TOKEN, yaml, flow.id ?? undefined)
+      const saveResult = await saveAutomation(
+        HA_URL,
+        HA_TOKEN,
+        yaml,
+        flow.id ?? undefined
+      )
       markSaved(new Date().toISOString(), saveResult.id)
       setSaveError(null)
     } catch (error) {
@@ -275,7 +287,10 @@ function App() {
       const automationList = await listAutomations(HA_URL, HA_TOKEN)
       setAutomations(automationList)
     } catch (error) {
-      const message = getErrorMessage(error, 'Failed to load automations from Home Assistant.')
+      const message = getErrorMessage(
+        error,
+        'Failed to load automations from Home Assistant.'
+      )
       setImportLoadError(message)
     } finally {
       setIsImportLoading(false)
@@ -324,7 +339,7 @@ function App() {
         setIsImportLoading(false)
       }
     },
-    [knownEntityIds, setFlow, setSaveError],
+    [knownEntityIds, setFlow, setSaveError]
   )
 
   let statusAnnouncement: string | undefined

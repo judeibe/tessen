@@ -1,6 +1,10 @@
 import type { Connection } from 'home-assistant-js-websocket'
 
-import type { AutomationMode, AutomationSummary, HAAutomationYAML } from '../shared/types'
+import type {
+  AutomationMode,
+  AutomationSummary,
+  HAAutomationYAML,
+} from '../shared/types'
 import { HANotFoundError, HASaveError } from './client'
 
 type ValidationSectionResult = {
@@ -9,15 +13,15 @@ type ValidationSectionResult = {
 }
 
 type ValidationParts = {
-  trigger?: Record<string, unknown>[]
-  condition?: Record<string, unknown>[]
-  action?: Record<string, unknown>[]
+  triggers?: Record<string, unknown>[]
+  conditions?: Record<string, unknown>[]
+  actions?: Record<string, unknown>[]
 }
 
 interface ValidationResponse {
-  trigger?: ValidationSectionResult
-  condition?: ValidationSectionResult
-  action?: ValidationSectionResult
+  triggers?: ValidationSectionResult
+  conditions?: ValidationSectionResult
+  actions?: ValidationSectionResult
 }
 
 interface HAStateEntity {
@@ -36,9 +40,9 @@ const KNOWN_AUTOMATION_KEYS = new Set([
   'alias',
   'description',
   'mode',
-  'trigger',
-  'condition',
-  'action',
+  'triggers',
+  'conditions',
+  'actions',
 ])
 
 function getBaseUrl(haUrl: string): string {
@@ -52,7 +56,9 @@ function createAuthHeaders(token: string): Record<string, string> {
   }
 }
 
-async function readHAErrorMessage(response: Response): Promise<string | undefined> {
+async function readHAErrorMessage(
+  response: Response
+): Promise<string | undefined> {
   const contentType = response.headers.get('content-type')
 
   try {
@@ -72,7 +78,7 @@ async function readHAErrorMessage(response: Response): Promise<string | undefine
 
 function normalizeValidationSection(
   section: ValidationSectionResult | undefined,
-  wasRequested: boolean,
+  wasRequested: boolean
 ): ValidationSectionResult {
   if (!wasRequested) {
     return { valid: true, error: null }
@@ -104,14 +110,13 @@ function isAutomationMode(value: unknown): value is AutomationMode {
 function toRecordArray(
   value: unknown,
   fieldName: 'triggers' | 'conditions' | 'actions',
-  required = false,
+  required = false
 ): Record<string, unknown>[] {
-  console.log('toRecordArray', { value, fieldName, required })
   if (!Array.isArray(value)) {
     if (required) {
       throw new HASaveError(
         'VALIDATION',
-        `Home Assistant returned automation data with an invalid '${fieldName}' field.`,
+        `Home Assistant returned automation data with an invalid '${fieldName}' field.`
       )
     }
     return []
@@ -120,7 +125,7 @@ function toRecordArray(
   if (!value.every(isRecord)) {
     throw new HASaveError(
       'VALIDATION',
-      `Home Assistant returned an invalid '${fieldName}' array.`,
+      `Home Assistant returned an invalid '${fieldName}' array.`
     )
   }
 
@@ -136,7 +141,7 @@ function toRecordArray(
  */
 export async function listAutomations(
   haUrl: string,
-  token: string,
+  token: string
 ): Promise<AutomationSummary[]> {
   const baseUrl = getBaseUrl(haUrl)
   const url = `${baseUrl}/api/states`
@@ -154,7 +159,7 @@ export async function listAutomations(
       undefined,
       {
         cause: error,
-      },
+      }
     )
   }
 
@@ -163,7 +168,7 @@ export async function listAutomations(
     throw new HASaveError(
       'NETWORK',
       `Failed to list automations. Home Assistant responded with status ${response.status}.`,
-      haMessage,
+      haMessage
     )
   }
 
@@ -171,7 +176,7 @@ export async function listAutomations(
   if (!Array.isArray(payload)) {
     throw new HASaveError(
       'VALIDATION',
-      'Home Assistant returned an invalid automations list response.',
+      'Home Assistant returned an invalid automations list response.'
     )
   }
 
@@ -186,9 +191,11 @@ export async function listAutomations(
         typeof entry.attributes?.friendly_name === 'string' &&
         entry.attributes.friendly_name.trim().length > 0
           ? entry.attributes.friendly_name
-          : entry.entity_id ?? '',
+          : (entry.entity_id ?? ''),
       state:
-        entry.state === 'on' || entry.state === 'off' || entry.state === 'unavailable'
+        entry.state === 'on' ||
+        entry.state === 'off' ||
+        entry.state === 'unavailable'
           ? entry.state
           : 'unavailable',
     }))
@@ -203,7 +210,7 @@ export async function listAutomations(
 export async function getAutomationConfig(
   haUrl: string,
   token: string,
-  automationId: string,
+  automationId: string
 ): Promise<HAAutomationYAML> {
   const baseUrl = getBaseUrl(haUrl)
   const url = `${baseUrl}/api/config/automation/config/${encodeURIComponent(automationId)}`
@@ -221,7 +228,7 @@ export async function getAutomationConfig(
       undefined,
       {
         cause: error,
-      },
+      }
     )
   }
 
@@ -234,7 +241,7 @@ export async function getAutomationConfig(
     throw new HASaveError(
       'NETWORK',
       `Failed to load automation '${automationId}'.`,
-      haMessage,
+      haMessage
     )
   }
 
@@ -242,11 +249,11 @@ export async function getAutomationConfig(
   if (!isRecord(payload)) {
     throw new HASaveError(
       'VALIDATION',
-      `Home Assistant returned invalid automation data for '${automationId}'.`,
+      `Home Assistant returned invalid automation data for '${automationId}'.`
     )
   }
 
-  const trigger = toRecordArray(payload.triggers, 'triggers', true)
+  const triggers = toRecordArray(payload.triggers, 'triggers', true)
   const actions = toRecordArray(payload.actions, 'actions', true)
   const conditions =
     payload.conditions === undefined
@@ -256,14 +263,14 @@ export async function getAutomationConfig(
   if (typeof payload.alias !== 'string') {
     throw new HASaveError(
       'VALIDATION',
-      `Home Assistant returned automation '${automationId}' without an alias.`,
+      `Home Assistant returned automation '${automationId}' without an alias.`
     )
   }
 
   const normalized: HAAutomationYAML = {
     alias: payload.alias,
-    trigger,
-    action: actions,
+    triggers,
+    actions,
   }
 
   if (typeof payload.id === 'string') {
@@ -279,7 +286,7 @@ export async function getAutomationConfig(
   }
 
   if (conditions) {
-    normalized.condition = conditions
+    normalized.conditions = conditions
   }
 
   for (const [key, value] of Object.entries(payload)) {
@@ -304,7 +311,7 @@ export async function saveAutomation(
   haUrl: string,
   token: string,
   automation: HAAutomationYAML,
-  existingId?: string,
+  existingId?: string
 ): Promise<{ id: string }> {
   const baseUrl = getBaseUrl(haUrl)
   const normalizedExistingId =
@@ -315,7 +322,8 @@ export async function saveAutomation(
     typeof automation.id === 'string' && automation.id.trim().length > 0
       ? automation.id
       : undefined
-  const resolvedId = normalizedExistingId ?? normalizedAutomationId ?? Date.now().toString()
+  const resolvedId =
+    normalizedExistingId ?? normalizedAutomationId ?? Date.now().toString()
   const isUpdate = Boolean(normalizedExistingId)
   const url = isUpdate
     ? `${baseUrl}/api/config/automation/config/${encodeURIComponent(resolvedId)}`
@@ -340,7 +348,7 @@ export async function saveAutomation(
       undefined,
       {
         cause: error,
-      },
+      }
     )
   }
 
@@ -351,7 +359,7 @@ export async function saveAutomation(
       throw new HASaveError(
         'SIZE_LIMIT',
         'Automation payload exceeds Home Assistant size limit.',
-        haMessage,
+        haMessage
       )
     }
 
@@ -359,14 +367,14 @@ export async function saveAutomation(
       throw new HASaveError(
         'VALIDATION',
         'Home Assistant rejected automation configuration.',
-        haMessage,
+        haMessage
       )
     }
 
     throw new HASaveError(
       'NETWORK',
       `Failed to save automation. Home Assistant responded with status ${response.status}.`,
-      haMessage,
+      haMessage
     )
   }
 
@@ -384,11 +392,11 @@ export async function saveAutomation(
 
 export async function validateAutomationConfig(
   conn: Connection,
-  parts: ValidationParts,
+  parts: ValidationParts
 ): Promise<{
-  trigger: ValidationSectionResult
-  condition: ValidationSectionResult
-  action: ValidationSectionResult
+  triggers: ValidationSectionResult
+  conditions: ValidationSectionResult
+  actions: ValidationSectionResult
 }> {
   try {
     const response = await conn.sendMessagePromise<ValidationResponse>({
@@ -397,12 +405,18 @@ export async function validateAutomationConfig(
     })
 
     return {
-      trigger: normalizeValidationSection(response.trigger, Boolean(parts.trigger)),
-      condition: normalizeValidationSection(
-        response.condition,
-        Boolean(parts.condition),
+      triggers: normalizeValidationSection(
+        response.triggers,
+        Boolean(parts.triggers)
       ),
-      action: normalizeValidationSection(response.action, Boolean(parts.action)),
+      conditions: normalizeValidationSection(
+        response.conditions,
+        Boolean(parts.conditions)
+      ),
+      actions: normalizeValidationSection(
+        response.actions,
+        Boolean(parts.actions)
+      ),
     }
   } catch (error) {
     throw new HASaveError(
@@ -411,7 +425,7 @@ export async function validateAutomationConfig(
       undefined,
       {
         cause: error,
-      },
+      }
     )
   }
 }
@@ -419,7 +433,7 @@ export async function validateAutomationConfig(
 export async function deleteAutomation(
   haUrl: string,
   token: string,
-  automationId: string,
+  automationId: string
 ): Promise<void> {
   const baseUrl = getBaseUrl(haUrl)
   const url = `${baseUrl}/api/config/automation/config/${encodeURIComponent(automationId)}`
@@ -437,7 +451,7 @@ export async function deleteAutomation(
       undefined,
       {
         cause: error,
-      },
+      }
     )
   }
 
@@ -450,7 +464,7 @@ export async function deleteAutomation(
     throw new HASaveError(
       'NETWORK',
       `Failed to delete automation '${automationId}'.`,
-      haMessage,
+      haMessage
     )
   }
 }

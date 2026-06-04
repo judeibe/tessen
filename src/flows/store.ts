@@ -32,7 +32,7 @@ const createEdgeId = (): string =>
 
 function throttle<TArgs extends unknown[]>(
   callback: (...args: TArgs) => void,
-  waitMs: number,
+  waitMs: number
 ): (...args: TArgs) => void {
   let timeout: ReturnType<typeof setTimeout> | null = null
   let queuedArgs: TArgs | null = null
@@ -57,7 +57,7 @@ function throttle<TArgs extends unknown[]>(
 
 function createDefaultFlow(
   nodes: FlowNode[] = [],
-  edges: FlowEdge[] = [],
+  edges: FlowEdge[] = []
 ): AutomationFlow {
   return {
     id: null,
@@ -74,7 +74,7 @@ function createDefaultFlow(
 function ensureFlow(
   flow: AutomationFlow | null,
   nodes: FlowNode[],
-  edges: FlowEdge[],
+  edges: FlowEdge[]
 ): AutomationFlow {
   if (!flow) {
     return createDefaultFlow(nodes, edges)
@@ -164,7 +164,7 @@ export const useFlowStore = create<FlowStore>()(
         set((state) => {
           const nodes = state.nodes.filter((node) => node.id !== nodeId)
           const edges = state.edges.filter(
-            (edge) => edge.source !== nodeId && edge.target !== nodeId,
+            (edge) => edge.source !== nodeId && edge.target !== nodeId
           )
 
           return {
@@ -187,7 +187,7 @@ export const useFlowStore = create<FlowStore>()(
                     ...data,
                   } as FlowNodeData,
                 }
-              : node,
+              : node
           )
 
           return {
@@ -326,6 +326,6 @@ export const useFlowStore = create<FlowStore>()(
       }),
       equality: (past, current) =>
         past.nodes === current.nodes && past.edges === current.edges,
-    },
-  ),
+    }
+  )
 )

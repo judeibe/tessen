@@ -7,7 +7,9 @@ import {
 
 import type { HAService, HAServiceField } from '../shared/types'
 
-function mapServiceFields(fields: HassService['fields']): Record<string, HAServiceField> {
+function mapServiceFields(
+  fields: HassService['fields']
+): Record<string, HAServiceField> {
   return Object.fromEntries(
     Object.entries(fields ?? {}).map(([fieldName, field]) => [
       fieldName,
@@ -21,7 +23,7 @@ function mapServiceFields(fields: HassService['fields']): Record<string, HAServi
             : undefined,
         default: field.default,
       },
-    ]),
+    ])
   )
 }
 
@@ -56,6 +58,8 @@ export async function getAllServices(conn: Connection): Promise<HAService[]> {
     const services = await getServices(conn)
     return mapServices(services)
   } catch (error) {
-    throw new Error('Failed to fetch Home Assistant services.', { cause: error })
+    throw new Error('Failed to fetch Home Assistant services.', {
+      cause: error,
+    })
   }
 }

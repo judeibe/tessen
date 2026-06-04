@@ -45,7 +45,11 @@ export function AppLayout({
           {palette}
         </aside>
 
-        <main className="app-layout__canvas" role="main" aria-label="Automation canvas">
+        <main
+          className="app-layout__canvas"
+          role="main"
+          aria-label="Automation canvas"
+        >
           {canvas}
         </main>
 

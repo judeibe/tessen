@@ -16,10 +16,7 @@ const createTriggerNode = (id = 'trigger-1'): FlowNode => ({
   },
 })
 
-const createActionNode = (
-  id = 'action-1',
-  message = 'hello',
-): FlowNode => ({
+const createActionNode = (id = 'action-1', message = 'hello'): FlowNode => ({
   id,
   type: 'action',
   position: { x: 300, y: 100 },
@@ -37,7 +34,7 @@ const createActionNode = (
 const createEdge = (
   source: string,
   target: string,
-  id = `${source}-${target}`,
+  id = `${source}-${target}`
 ): FlowEdge => ({
   id,
   source,
@@ -46,7 +43,7 @@ const createEdge = (
 })
 
 const createFlow = (
-  overrides: Partial<AutomationFlow> = {},
+  overrides: Partial<AutomationFlow> = {}
 ): AutomationFlow => ({
   id: null,
   alias: 'Kitchen automation',
@@ -81,13 +78,13 @@ describe('validateFlow', () => {
         alias: '',
         nodes: [],
         edges: [],
-      }),
+      })
     )
     const codes = result.errors.map((error) => error.code)
 
     expect(result.valid).toBe(false)
     expect(codes).toEqual(
-      expect.arrayContaining(['MISSING_ALIAS', 'NO_TRIGGER', 'NO_ACTION']),
+      expect.arrayContaining(['MISSING_ALIAS', 'NO_TRIGGER', 'NO_ACTION'])
     )
   })
 
@@ -96,7 +93,7 @@ describe('validateFlow', () => {
       createFlow({
         nodes: [createActionNode()],
         edges: [],
-      }),
+      })
     )
 
     expect(result.valid).toBe(false)
@@ -108,7 +105,7 @@ describe('validateFlow', () => {
       createFlow({
         nodes: [createTriggerNode()],
         edges: [],
-      }),
+      })
     )
 
     expect(result.valid).toBe(false)
@@ -120,7 +117,7 @@ describe('validateFlow', () => {
       createFlow({
         nodes: [createTriggerNode('node-1'), createActionNode('node-2')],
         edges: [createEdge('node-1', 'node-2'), createEdge('node-2', 'node-1')],
-      }),
+      })
     )
 
     expect(result.valid).toBe(false)
@@ -137,9 +134,12 @@ describe('validateFlow', () => {
   it('returns SIZE_LIMIT when serialized flow exceeds max size', () => {
     const result = validateFlow(
       createFlow({
-        nodes: [createTriggerNode(), createActionNode('action-1', 'x'.repeat(2048))],
+        nodes: [
+          createTriggerNode(),
+          createActionNode('action-1', 'x'.repeat(2048)),
+        ],
       }),
-      256,
+      256
     )
 
     expect(result.valid).toBe(false)

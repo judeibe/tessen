@@ -5,7 +5,10 @@ import type { FlowNode } from '../../shared/types'
 type PaletteNodeType = NonNullable<FlowNode['type']>
 
 export interface NodePaletteProps {
-  onAddNode: (type: PaletteNodeType, position?: { x: number; y: number }) => void
+  onAddNode: (
+    type: PaletteNodeType,
+    position?: { x: number; y: number }
+  ) => void
 }
 
 interface PaletteItem {
@@ -63,7 +66,7 @@ export function NodePalette({ onAddNode }: NodePaletteProps) {
 
   const handleDragStart = (
     event: DragEvent<HTMLButtonElement>,
-    type: PaletteNodeType,
+    type: PaletteNodeType
   ) => {
     event.dataTransfer.setData('application/reactflow', type)
     event.dataTransfer.setData('text/plain', type)
@@ -85,14 +88,18 @@ export function NodePalette({ onAddNode }: NodePaletteProps) {
 
   const handleKeyboardInteraction = (
     event: KeyboardEvent<HTMLButtonElement>,
-    item: PaletteItem,
+    item: PaletteItem
   ) => {
-    if (event.key === ' ' || event.key === 'Spacebar' || event.key === 'Space') {
+    if (
+      event.key === ' ' ||
+      event.key === 'Spacebar' ||
+      event.key === 'Space'
+    ) {
       event.preventDefault()
       suppressNextClick(item.type)
       setKeyboardDrag({ type: item.type, xOffset: 0, yOffset: 0 })
       setKeyboardStatus(
-        `Picked up ${item.title} node. Use arrow keys to position and Enter to drop.`,
+        `Picked up ${item.title} node. Use arrow keys to position and Enter to drop.`
       )
       return
     }
@@ -115,7 +122,10 @@ export function NodePalette({ onAddNode }: NodePaletteProps) {
       return
     }
 
-    const nextOffset = { xOffset: keyboardDrag.xOffset, yOffset: keyboardDrag.yOffset }
+    const nextOffset = {
+      xOffset: keyboardDrag.xOffset,
+      yOffset: keyboardDrag.yOffset,
+    }
 
     switch (event.key) {
       case 'ArrowUp':
@@ -140,7 +150,7 @@ export function NodePalette({ onAddNode }: NodePaletteProps) {
       ...nextOffset,
     })
     setKeyboardStatus(
-      `${item.title} node position offset ${nextOffset.xOffset}, ${nextOffset.yOffset}.`,
+      `${item.title} node position offset ${nextOffset.xOffset}, ${nextOffset.yOffset}.`
     )
   }
 
@@ -148,10 +158,13 @@ export function NodePalette({ onAddNode }: NodePaletteProps) {
     <section aria-label="Node palette">
       <h2 style={{ marginTop: 0, marginBottom: 12 }}>Node Palette</h2>
       <p style={{ marginTop: 0, marginBottom: 12 }}>
-        Drag nodes to the canvas. Keyboard: Enter adds at center, Space picks up, arrows move,
-        and Enter drops.
+        Drag nodes to the canvas. Keyboard: Enter adds at center, Space picks
+        up, arrows move, and Enter drops.
       </p>
-      <p aria-live="polite" style={{ marginTop: 0, marginBottom: 12, color: '#334155' }}>
+      <p
+        aria-live="polite"
+        style={{ marginTop: 0, marginBottom: 12, color: '#334155' }}
+      >
         {keyboardStatus}
       </p>
       <ul

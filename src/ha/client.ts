@@ -17,7 +17,11 @@ type HASaveErrorCode = 'NETWORK' | 'VALIDATION' | 'SIZE_LIMIT'
 export class HAConnectionError extends Error {
   code: HAConnectionErrorCode
 
-  constructor(code: HAConnectionErrorCode, message: string, options?: ErrorOptions) {
+  constructor(
+    code: HAConnectionErrorCode,
+    message: string,
+    options?: ErrorOptions
+  ) {
     super(message, options)
     this.name = 'HAConnectionError'
     this.code = code
@@ -32,7 +36,7 @@ export class HASaveError extends Error {
     code: HASaveErrorCode,
     message: string,
     haMessage?: string,
-    options?: ErrorOptions,
+    options?: ErrorOptions
   ) {
     super(message, options)
     this.name = 'HASaveError'
@@ -70,7 +74,7 @@ function normalizeHAErrorCode(error: unknown): number | null {
 
 export async function connectToHA(
   haUrl: string,
-  token: string,
+  token: string
 ): Promise<Connection> {
   try {
     const auth = createLongLivedTokenAuth(haUrl, token)
@@ -82,7 +86,7 @@ export async function connectToHA(
       throw new HAConnectionError(
         'CANNOT_CONNECT',
         'Unable to connect to Home Assistant.',
-        { cause: error },
+        { cause: error }
       )
     }
 
@@ -90,7 +94,7 @@ export async function connectToHA(
       throw new HAConnectionError(
         'INVALID_AUTH',
         'Home Assistant rejected the access token.',
-        { cause: error },
+        { cause: error }
       )
     }
 
@@ -98,14 +102,14 @@ export async function connectToHA(
       throw new HAConnectionError(
         'CONNECTION_LOST',
         'Connection to Home Assistant was lost.',
-        { cause: error },
+        { cause: error }
       )
     }
 
     throw new HAConnectionError(
       'CANNOT_CONNECT',
       'Unable to connect to Home Assistant.',
-      { cause: error },
+      { cause: error }
     )
   }
 }

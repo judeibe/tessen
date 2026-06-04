@@ -10,7 +10,8 @@ import { useFlowStore } from '../../../flows/store'
 import { AutomationCanvas } from '../AutomationCanvas'
 
 vi.mock('@xyflow/react', async () => {
-  const actual = await vi.importActual<typeof import('@xyflow/react')>('@xyflow/react')
+  const actual =
+    await vi.importActual<typeof import('@xyflow/react')>('@xyflow/react')
 
   return {
     ...actual,
@@ -24,7 +25,10 @@ vi.mock('@xyflow/react', async () => {
       onlyRenderVisibleElements,
     }: {
       children?: ReactNode
-      onConnect?: (connection: { source?: string | null; target?: string | null }) => void
+      onConnect?: (connection: {
+        source?: string | null
+        target?: string | null
+      }) => void
       ariaLabel?: string
       onlyRenderVisibleElements?: boolean
     }) => (
@@ -35,7 +39,9 @@ vi.mock('@xyflow/react', async () => {
       >
         <button
           type="button"
-          onClick={() => onConnect?.({ source: 'trigger-1', target: 'action-1' })}
+          onClick={() =>
+            onConnect?.({ source: 'trigger-1', target: 'action-1' })
+          }
         >
           Connect nodes
         </button>
@@ -113,7 +119,7 @@ describe('AutomationCanvas', () => {
     await user.click(screen.getByRole('button', { name: 'Connect nodes' }))
 
     expect(
-      screen.getByText('Connection rejected: this link would create a cycle.'),
+      screen.getByText('Connection rejected: this link would create a cycle.')
     ).toBeInTheDocument()
   })
 
@@ -122,7 +128,7 @@ describe('AutomationCanvas', () => {
 
     expect(screen.getByTestId('react-flow')).toHaveAttribute(
       'data-only-render-visible-elements',
-      'true',
+      'true'
     )
   })
 

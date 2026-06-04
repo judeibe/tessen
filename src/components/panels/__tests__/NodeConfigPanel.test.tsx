@@ -3,7 +3,11 @@ import userEvent from '@testing-library/user-event'
 import { axe } from 'jest-axe'
 import { describe, expect, it, vi } from 'vitest'
 
-import type { HAEntity, HAService, TriggerNodeData } from '../../../shared/types'
+import type {
+  HAEntity,
+  HAService,
+  TriggerNodeData,
+} from '../../../shared/types'
 import { NodeConfigPanel } from '../NodeConfigPanel'
 
 const entities: HAEntity[] = [
@@ -47,13 +51,15 @@ describe('NodeConfigPanel', () => {
         onChange={onChange}
         onDelete={vi.fn()}
         onClose={vi.fn()}
-      />,
+      />
     )
 
     const labelInput = screen.getByRole('textbox', { name: 'Label' })
     fireEvent.change(labelInput, { target: { value: 'Updated trigger' } })
 
-    expect(onChange).toHaveBeenCalledWith('trigger-1', { label: 'Updated trigger' })
+    expect(onChange).toHaveBeenCalledWith('trigger-1', {
+      label: 'Updated trigger',
+    })
   })
 
   it('calls onDelete and onClose actions', async () => {
@@ -71,13 +77,15 @@ describe('NodeConfigPanel', () => {
         onChange={vi.fn()}
         onDelete={onDelete}
         onClose={onClose}
-      />,
+      />
     )
 
     await user.click(
-      screen.getByRole('button', { name: 'Close node configuration panel' }),
+      screen.getByRole('button', { name: 'Close node configuration panel' })
     )
-    await user.click(screen.getByRole('button', { name: 'Delete node trigger-1' }))
+    await user.click(
+      screen.getByRole('button', { name: 'Delete node trigger-1' })
+    )
 
     expect(onClose).toHaveBeenCalledTimes(1)
     expect(onDelete).toHaveBeenCalledWith('trigger-1')
@@ -94,7 +102,7 @@ describe('NodeConfigPanel', () => {
         onChange={vi.fn()}
         onDelete={vi.fn()}
         onClose={vi.fn()}
-      />,
+      />
     )
 
     expect(await axe(container)).toHaveNoViolations()

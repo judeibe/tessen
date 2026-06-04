@@ -7,7 +7,9 @@ import { describe, expect, it, vi } from 'vitest'
 
 import { AutomationHeader } from '../AutomationHeader'
 
-function renderHeader(overrides: Partial<ComponentProps<typeof AutomationHeader>> = {}) {
+function renderHeader(
+  overrides: Partial<ComponentProps<typeof AutomationHeader>> = {}
+) {
   const props: ComponentProps<typeof AutomationHeader> = {
     alias: 'Morning routine',
     description: 'Starts every day',
@@ -38,7 +40,9 @@ describe('AutomationHeader', () => {
     const { props } = renderHeader()
 
     await user.click(
-      screen.getByRole('button', { name: 'Import automation from Home Assistant' }),
+      screen.getByRole('button', {
+        name: 'Import automation from Home Assistant',
+      })
     )
     await user.click(screen.getByRole('button', { name: 'Save automation' }))
     await user.click(screen.getByRole('button', { name: 'Undo last change' }))
@@ -53,7 +57,9 @@ describe('AutomationHeader', () => {
   it('disables save when there are no unsaved changes', () => {
     renderHeader({ isDirty: false })
 
-    expect(screen.getByRole('button', { name: 'Save automation' })).toBeDisabled()
+    expect(
+      screen.getByRole('button', { name: 'Save automation' })
+    ).toBeDisabled()
   })
 
   it('has no detectable accessibility violations', async () => {

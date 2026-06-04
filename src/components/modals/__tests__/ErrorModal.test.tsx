@@ -18,7 +18,7 @@ describe('ErrorModal', () => {
         message="Could not save."
         onRetry={onRetry}
         onClose={onClose}
-      />,
+      />
     )
 
     await user.click(screen.getByRole('button', { name: 'Retry' }))
@@ -37,7 +37,7 @@ describe('ErrorModal', () => {
         title="Connection error"
         message="No connection."
         onClose={onClose}
-      />,
+      />
     )
 
     fireEvent.keyDown(document, { key: 'Escape' })
@@ -52,7 +52,7 @@ describe('ErrorModal', () => {
         title="Validation error"
         message="Invalid automation"
         onClose={vi.fn()}
-      />,
+      />
     )
 
     expect(await axe(container)).toHaveNoViolations()

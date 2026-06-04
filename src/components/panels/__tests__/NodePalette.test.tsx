@@ -23,7 +23,9 @@ describe('NodePalette', () => {
 
     render(<NodePalette onAddNode={onAddNode} />)
 
-    const triggerButton = screen.getByRole('button', { name: 'Add Trigger node' })
+    const triggerButton = screen.getByRole('button', {
+      name: 'Add Trigger node',
+    })
     triggerButton.focus()
 
     await user.keyboard('{Space}')
@@ -31,7 +33,7 @@ describe('NodePalette', () => {
 
     expect(onAddNode).toHaveBeenCalledWith('trigger', { x: 360, y: 240 })
     expect(
-      screen.getByText('Dropped trigger node on the canvas.'),
+      screen.getByText('Dropped trigger node on the canvas.')
     ).toBeInTheDocument()
   })
 

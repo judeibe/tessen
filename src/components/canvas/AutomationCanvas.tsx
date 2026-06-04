@@ -58,7 +58,7 @@ function AutomationCanvasFlow() {
         type: 'execution',
       })
     },
-    [addEdge, edges, nodes],
+    [addEdge, edges, nodes]
   )
 
   const handleDrop = useCallback(
@@ -81,7 +81,7 @@ function AutomationCanvasFlow() {
       addNode(droppedType, position)
       setCycleWarning(null)
     },
-    [addNode, screenToFlowPosition],
+    [addNode, screenToFlowPosition]
   )
 
   const handleDragOver = useCallback((event: DragEvent<HTMLDivElement>) => {
@@ -93,7 +93,7 @@ function AutomationCanvasFlow() {
     (_, node) => {
       selectNode(node.id)
     },
-    [selectNode],
+    [selectNode]
   )
 
   const handlePaneClick = useCallback(() => {

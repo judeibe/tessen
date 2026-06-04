@@ -1,7 +1,12 @@
 import { describe, expect, it } from 'vitest'
 
 import { DEFAULT_AUTOMATION_MODE } from '../../shared/constants'
-import type { AutomationFlow, FlowEdge, FlowNode, HAAutomationYAML } from '../../shared/types'
+import type {
+  AutomationFlow,
+  FlowEdge,
+  FlowNode,
+  HAAutomationYAML,
+} from '../../shared/types'
 import { flowToYaml, SerializationError, yamlToFlow } from '../serialization'
 
 const createTriggerNode = (id: string, entityId: string): FlowNode => ({
@@ -48,7 +53,7 @@ const createEdge = (source: string, target: string, id: string): FlowEdge => ({
 })
 
 const createFlow = (
-  overrides: Partial<AutomationFlow> = {},
+  overrides: Partial<AutomationFlow> = {}
 ): AutomationFlow => ({
   id: null,
   alias: 'Kitchen automation',
@@ -76,7 +81,7 @@ describe('flowToYaml', () => {
           createEdge(trigger.id, condition.id, 'e-1'),
           createEdge(condition.id, action.id, 'e-2'),
         ],
-      }),
+      })
     )
 
     expect(yaml).toEqual({
@@ -84,7 +89,9 @@ describe('flowToYaml', () => {
       description: 'Runs every evening',
       mode: 'queued',
       trigger: [{ platform: 'state', entity_id: 'light.kitchen', to: 'on' }],
-      condition: [{ condition: 'state', entity_id: 'binary_sensor.home', state: 'on' }],
+      condition: [
+        { condition: 'state', entity_id: 'binary_sensor.home', state: 'on' },
+      ],
       action: [{ service: 'notify.mobile_app', data: { message: 'hello' } }],
     })
   })
@@ -98,7 +105,9 @@ describe('flowToYaml', () => {
         mode: 'queued',
         trigger: [{ platform: 'state', entity_id: 'light.kitchen', to: 'on' }],
         condition: [{ condition: 'time', after: '18:00:00' }],
-        action: [{ service: 'light.turn_on', target: { entity_id: 'light.kitchen' } }],
+        action: [
+          { service: 'light.turn_on', target: { entity_id: 'light.kitchen' } },
+        ],
       }
 
       const flow = yamlToFlow(yaml, new Set(['light.kitchen']))
@@ -107,11 +116,14 @@ describe('flowToYaml', () => {
       expect(flow.alias).toBe('Evening automation')
       expect(flow.description).toBe('Imported from Home Assistant')
       expect(flow.mode).toBe('queued')
-      expect(flow.nodes.map((node) => node.type)).toEqual(['trigger', 'condition', 'action'])
-      expect(flow.edges.map((edge) => `${edge.source}->${edge.target}`)).toEqual([
-        'trigger-1->condition-1',
-        'condition-1->action-1',
+      expect(flow.nodes.map((node) => node.type)).toEqual([
+        'trigger',
+        'condition',
+        'action',
       ])
+      expect(
+        flow.edges.map((edge) => `${edge.source}->${edge.target}`)
+      ).toEqual(['trigger-1->condition-1', 'condition-1->action-1'])
 
       expect(flow.nodes[0].data).toMatchObject({
         label: 'state trigger',
@@ -137,17 +149,23 @@ describe('flowToYaml', () => {
           { platform: 'state', entity_id: 'binary_sensor.door', to: 'on' },
           { platform: 'time', at: '08:00:00' },
         ],
-        condition: [{ condition: 'state', entity_id: 'input_boolean.away', state: 'off' }],
+        condition: [
+          { condition: 'state', entity_id: 'input_boolean.away', state: 'off' },
+        ],
         action: [{ service: 'notify.notify', data: { message: 'Hello' } }],
       }
 
       const flow = yamlToFlow(
         yaml,
-        new Set(['binary_sensor.door', 'input_boolean.away']),
+        new Set(['binary_sensor.door', 'input_boolean.away'])
       )
 
-      expect(flow.nodes.filter((node) => node.type === 'trigger')).toHaveLength(2)
-      expect(flow.edges.map((edge) => `${edge.source}->${edge.target}`)).toEqual([
+      expect(flow.nodes.filter((node) => node.type === 'trigger')).toHaveLength(
+        2
+      )
+      expect(
+        flow.edges.map((edge) => `${edge.source}->${edge.target}`)
+      ).toEqual([
         'trigger-1->condition-1',
         'trigger-2->condition-1',
         'condition-1->action-1',
@@ -166,10 +184,10 @@ describe('flowToYaml', () => {
 
       expect(warningNodes).toHaveLength(2)
       expect(warningNodes[0].data.warningMessage).toBe(
-        "Entity 'light.unknown' was not found in Home Assistant.",
+        "Entity 'light.unknown' was not found in Home Assistant."
       )
       expect(warningNodes[1].data.warningMessage).toBe(
-        "Entity 'light.unknown' was not found in Home Assistant.",
+        "Entity 'light.unknown' was not found in Home Assistant."
       )
     })
 
@@ -205,11 +223,12 @@ describe('flowToYaml', () => {
 
       const flow = yamlToFlow(yaml, new Set(['sensor.motion']))
 
-      expect(flow.nodes.filter((node) => node.type === 'condition')).toHaveLength(0)
-      expect(flow.edges.map((edge) => `${edge.source}->${edge.target}`)).toEqual([
-        'trigger-1->action-1',
-        'action-1->action-2',
-      ])
+      expect(
+        flow.nodes.filter((node) => node.type === 'condition')
+      ).toHaveLength(0)
+      expect(
+        flow.edges.map((edge) => `${edge.source}->${edge.target}`)
+      ).toEqual(['trigger-1->action-1', 'action-1->action-2'])
       expect(flow.mode).toBe(DEFAULT_AUTOMATION_MODE)
     })
   })
@@ -222,11 +241,15 @@ describe('flowToYaml', () => {
       createFlow({
         nodes: [trigger, action],
         edges: [createEdge(trigger.id, action.id, 'e-1')],
-      }),
+      })
     )
 
-    expect(yaml.trigger).toEqual([{ platform: 'state', entity_id: 'light.kitchen', to: 'on' }])
-    expect(yaml.action).toEqual([{ service: 'light.turn_on', data: { message: 'hello' } }])
+    expect(yaml.trigger).toEqual([
+      { platform: 'state', entity_id: 'light.kitchen', to: 'on' },
+    ])
+    expect(yaml.action).toEqual([
+      { service: 'light.turn_on', data: { message: 'hello' } },
+    ])
     expect(yaml.condition).toBeUndefined()
   })
 
@@ -244,7 +267,7 @@ describe('flowToYaml', () => {
           createEdge(triggerA.id, actionA.id, 'e-2'),
           createEdge(actionA.id, actionB.id, 'e-3'),
         ],
-      }),
+      })
     )
 
     expect(yaml.trigger).toEqual([
@@ -266,7 +289,7 @@ describe('flowToYaml', () => {
         mode: 'parallel',
         nodes: [trigger, action],
         edges: [createEdge(trigger.id, action.id, 'e-1')],
-      }),
+      })
     )
 
     expect(yaml.mode).toBe('parallel')
@@ -286,7 +309,7 @@ describe('flowToYaml', () => {
           variables: { room: 'kitchen' },
           alias: 'Should not replace alias',
         },
-      }),
+      })
     )
 
     expect(yaml.alias).toBe('Known alias')
@@ -310,8 +333,8 @@ describe('flowToYaml', () => {
         createFlow({
           nodes: [trigger, invalidAction],
           edges: [createEdge(trigger.id, invalidAction.id, 'e-1')],
-        }),
-      ),
+        })
+      )
     ).toThrow(SerializationError)
   })
 })

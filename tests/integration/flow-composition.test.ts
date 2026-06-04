@@ -3,7 +3,12 @@ import { afterEach, describe, expect, it } from 'vitest'
 import { DEFAULT_AUTOMATION_MODE } from '../../src/shared/constants'
 import { flowToYaml, yamlToFlow } from '../../src/flows/serialization'
 import { useFlowStore } from '../../src/flows/store'
-import type { AutomationFlow, FlowEdge, FlowNode, HAAutomationYAML } from '../../src/shared/types'
+import type {
+  AutomationFlow,
+  FlowEdge,
+  FlowNode,
+  HAAutomationYAML,
+} from '../../src/shared/types'
 
 const triggerNode: FlowNode = {
   id: 'trigger-1',
@@ -45,8 +50,18 @@ const actionNode: FlowNode = {
 }
 
 const edges: FlowEdge[] = [
-  { id: 'edge-1', source: triggerNode.id, target: conditionNode.id, type: 'execution' },
-  { id: 'edge-2', source: conditionNode.id, target: actionNode.id, type: 'execution' },
+  {
+    id: 'edge-1',
+    source: triggerNode.id,
+    target: conditionNode.id,
+    type: 'execution',
+  },
+  {
+    id: 'edge-2',
+    source: conditionNode.id,
+    target: actionNode.id,
+    type: 'execution',
+  },
 ]
 
 function resetFlowStore(): void {
@@ -110,13 +125,17 @@ describe('flow composition integration', () => {
       id: 'automation.existing_automation',
       alias: 'Edit me',
       mode: 'single',
-      trigger: [{ platform: 'state', entity_id: 'binary_sensor.front_door', to: 'on' }],
-      action: [{ service: 'light.turn_on', target: { entity_id: 'light.porch' } }],
+      trigger: [
+        { platform: 'state', entity_id: 'binary_sensor.front_door', to: 'on' },
+      ],
+      action: [
+        { service: 'light.turn_on', target: { entity_id: 'light.porch' } },
+      ],
     }
 
     const importedFlow = yamlToFlow(
       importedYaml,
-      new Set(['binary_sensor.front_door', 'light.porch', 'notify.mobile_app']),
+      new Set(['binary_sensor.front_door', 'light.porch', 'notify.mobile_app'])
     )
 
     useFlowStore.getState().setFlow(importedFlow)
@@ -124,17 +143,17 @@ describe('flow composition integration', () => {
       useFlowStore
         .getState()
         .nodes.filter((node) => node.type === 'action')
-        .map((node) => node.id),
+        .map((node) => node.id)
     )
 
     useFlowStore.getState().addNode('action', { x: 780, y: 200 })
 
     const stateAfterAddNode = useFlowStore.getState()
     const newActionNode = stateAfterAddNode.nodes.find(
-      (node) => node.type === 'action' && !initialActionNodeIds.has(node.id),
+      (node) => node.type === 'action' && !initialActionNodeIds.has(node.id)
     )
     const originalActionNode = stateAfterAddNode.nodes.find(
-      (node) => node.type === 'action' && initialActionNodeIds.has(node.id),
+      (node) => node.type === 'action' && initialActionNodeIds.has(node.id)
     )
 
     expect(newActionNode).toBeDefined()

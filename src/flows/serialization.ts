@@ -35,7 +35,7 @@ export class SerializationError extends Error {
       nodeId?: string
       field?: string
       cause?: unknown
-    },
+    }
   ) {
     super(message, options)
     this.name = 'SerializationError'
@@ -51,7 +51,7 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 function requireRecord(
   value: unknown,
   nodeId: string,
-  field: string,
+  field: string
 ): Record<string, unknown> {
   if (!isRecord(value)) {
     throw new SerializationError('Node config is not serializable.', {
@@ -63,7 +63,10 @@ function requireRecord(
   return value
 }
 
-function buildTopologicalOrder(nodes: FlowNode[], edges: FlowEdge[]): FlowNode[] {
+function buildTopologicalOrder(
+  nodes: FlowNode[],
+  edges: FlowEdge[]
+): FlowNode[] {
   const nodeById = new Map<string, FlowNode>()
   const nodeIndex = new Map<string, number>()
   const inDegree = new Map<string, number>()
@@ -86,7 +89,7 @@ function buildTopologicalOrder(nodes: FlowNode[], edges: FlowEdge[]): FlowNode[]
         `Edge '${edge.id}' references a missing source or target node.`,
         {
           field: 'edges',
-        },
+        }
       )
     }
 
@@ -130,7 +133,7 @@ function buildTopologicalOrder(nodes: FlowNode[], edges: FlowEdge[]): FlowNode[]
       'Flow graph is cyclic and cannot be serialized to YAML order.',
       {
         field: 'edges',
-      },
+      }
     )
   }
 
@@ -154,7 +157,7 @@ function isAutomationMode(value: unknown): value is AutomationMode {
 
 function deriveWarningMessage(
   config: Record<string, unknown>,
-  knownEntityIds: Set<string>,
+  knownEntityIds: Set<string>
 ): string | undefined {
   const entityId = config.entity_id
   if (typeof entityId !== 'string') {
@@ -186,15 +189,16 @@ function deriveActionType(config: Record<string, unknown>): string {
 function createTriggerNode(
   triggerConfig: Record<string, unknown>,
   index: number,
-  knownEntityIds: Set<string>,
+  knownEntityIds: Set<string>
 ): FlowNode {
   const platform =
-    typeof triggerConfig.platform === 'string' && triggerConfig.platform.trim().length > 0
+    typeof triggerConfig.platform === 'string' &&
+    triggerConfig.platform.trim().length > 0
       ? triggerConfig.platform
       : 'trigger'
 
   const config = Object.fromEntries(
-    Object.entries(triggerConfig).filter(([key]) => key !== 'platform'),
+    Object.entries(triggerConfig).filter(([key]) => key !== 'platform')
   )
   const warningMessage = deriveWarningMessage(config, knownEntityIds)
 
@@ -220,7 +224,7 @@ function createTriggerNode(
 function createConditionNode(
   conditionConfig: Record<string, unknown>,
   index: number,
-  knownEntityIds: Set<string>,
+  knownEntityIds: Set<string>
 ): FlowNode {
   const condition =
     typeof conditionConfig.condition === 'string' &&
@@ -229,7 +233,7 @@ function createConditionNode(
       : 'condition'
 
   const config = Object.fromEntries(
-    Object.entries(conditionConfig).filter(([key]) => key !== 'condition'),
+    Object.entries(conditionConfig).filter(([key]) => key !== 'condition')
   )
   const warningMessage = deriveWarningMessage(config, knownEntityIds)
 
@@ -255,7 +259,7 @@ function createConditionNode(
 function createActionNode(
   actionConfig: Record<string, unknown>,
   index: number,
-  knownEntityIds: Set<string>,
+  knownEntityIds: Set<string>
 ): FlowNode {
   const service = actionConfig.service
   const actionType =
@@ -306,22 +310,23 @@ function toRecordArray(value: unknown): Record<string, unknown>[] {
 
 function extractUnknownProps(yaml: HAAutomationYAML): Record<string, unknown> {
   return Object.fromEntries(
-    Object.entries(yaml).filter(([key]) => !KNOWN_AUTOMATION_KEYS.has(key)),
+    Object.entries(yaml).filter(([key]) => !KNOWN_AUTOMATION_KEYS.has(key))
   )
 }
 
 export function yamlToFlow(
   yaml: HAAutomationYAML,
-  knownEntityIds: Set<string>,
+  knownEntityIds: Set<string>
 ): AutomationFlow {
   const triggerNodes = toRecordArray(yaml.trigger).map((triggerConfig, index) =>
-    createTriggerNode(triggerConfig, index, knownEntityIds),
+    createTriggerNode(triggerConfig, index, knownEntityIds)
   )
-  const conditionNodes = toRecordArray(yaml.condition).map((conditionConfig, index) =>
-    createConditionNode(conditionConfig, index, knownEntityIds),
+  const conditionNodes = toRecordArray(yaml.condition).map(
+    (conditionConfig, index) =>
+      createConditionNode(conditionConfig, index, knownEntityIds)
   )
   const actionNodes = toRecordArray(yaml.action).map((actionConfig, index) =>
-    createActionNode(actionConfig, index, knownEntityIds),
+    createActionNode(actionConfig, index, knownEntityIds)
   )
 
   const nodes = [...triggerNodes, ...conditionNodes, ...actionNodes]
@@ -340,19 +345,31 @@ export function yamlToFlow(
   }
 
   for (let index = 0; index < conditionNodes.length - 1; index += 1) {
-    edges.push(createEdge(conditionNodes[index].id, conditionNodes[index + 1].id, edgeIndex))
+    edges.push(
+      createEdge(
+        conditionNodes[index].id,
+        conditionNodes[index + 1].id,
+        edgeIndex
+      )
+    )
     edgeIndex += 1
   }
 
   if (conditionNodes.length > 0 && firstAction) {
     edges.push(
-      createEdge(conditionNodes[conditionNodes.length - 1].id, firstAction.id, edgeIndex),
+      createEdge(
+        conditionNodes[conditionNodes.length - 1].id,
+        firstAction.id,
+        edgeIndex
+      )
     )
     edgeIndex += 1
   }
 
   for (let index = 0; index < actionNodes.length - 1; index += 1) {
-    edges.push(createEdge(actionNodes[index].id, actionNodes[index + 1].id, edgeIndex))
+    edges.push(
+      createEdge(actionNodes[index].id, actionNodes[index + 1].id, edgeIndex)
+    )
     edgeIndex += 1
   }
 
@@ -403,20 +420,25 @@ function serializeActionNode(node: FlowNode): Record<string, unknown> {
 }
 
 function normalizeUnknownProps(
-  unknownProps: AutomationFlow['_unknownProps'],
+  unknownProps: AutomationFlow['_unknownProps']
 ): Record<string, unknown> {
   if (!unknownProps) {
     return {}
   }
 
   if (!isRecord(unknownProps)) {
-    throw new SerializationError('Unknown automation properties must be an object.', {
-      field: '_unknownProps',
-    })
+    throw new SerializationError(
+      'Unknown automation properties must be an object.',
+      {
+        field: '_unknownProps',
+      }
+    )
   }
 
   return Object.fromEntries(
-    Object.entries(unknownProps).filter(([key]) => !KNOWN_AUTOMATION_KEYS.has(key)),
+    Object.entries(unknownProps).filter(
+      ([key]) => !KNOWN_AUTOMATION_KEYS.has(key)
+    )
   )
 }
 

@@ -80,7 +80,7 @@ function getSerializedSizeBytes(flow: AutomationFlow): number {
 
 export function validateFlow(
   flow: AutomationFlow,
-  maxYamlSizeBytes = DEFAULT_MAX_YAML_SIZE_BYTES,
+  maxYamlSizeBytes = DEFAULT_MAX_YAML_SIZE_BYTES
 ): ValidationResult {
   const errors: ValidationError[] = []
 
@@ -111,7 +111,8 @@ export function validateFlow(
   if (hasCycle(flow.nodes, flow.edges)) {
     errors.push({
       code: 'CYCLE_DETECTED',
-      message: 'Flow contains a cycle. Home Assistant automations must be acyclic.',
+      message:
+        'Flow contains a cycle. Home Assistant automations must be acyclic.',
     })
   }
 
