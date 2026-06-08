@@ -12,9 +12,11 @@ jobs:
   lint:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
+      - &checkout_step
+        name: Checkout repository
         uses: actions/checkout@v4
-      - name: Setup pnpm
+      - &setup_pnpm_step
+        name: Setup pnpm
         uses: pnpm/action-setup@v4
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -29,12 +31,8 @@ jobs:
   typecheck:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 9
+      - *checkout_step
+      - *setup_pnpm_step
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -48,12 +46,8 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 9
+      - *checkout_step
+      - *setup_pnpm_step
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
