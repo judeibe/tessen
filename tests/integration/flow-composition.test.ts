@@ -97,21 +97,21 @@ describe('flow composition integration', () => {
       alias: 'Front door welcome',
       description: 'Notify when front door opens while at home',
       mode: 'single',
-      trigger: [
+      triggers: [
         {
           platform: 'state',
           entity_id: 'binary_sensor.front_door',
           to: 'on',
         },
       ],
-      condition: [
+      conditions: [
         {
           condition: 'state',
           entity_id: 'person.jude',
           state: 'home',
         },
       ],
-      action: [
+      actions: [
         {
           service: 'notify.mobile_app',
           data: { message: 'Front door opened while you are home.' },
@@ -125,10 +125,10 @@ describe('flow composition integration', () => {
       id: 'automation.existing_automation',
       alias: 'Edit me',
       mode: 'single',
-      trigger: [
+      triggers: [
         { platform: 'state', entity_id: 'binary_sensor.front_door', to: 'on' },
       ],
-      action: [
+      actions: [
         { service: 'light.turn_on', target: { entity_id: 'light.porch' } },
       ],
     }
@@ -179,14 +179,14 @@ describe('flow composition integration', () => {
     const serialized = flowToYaml(updatedFlow as AutomationFlow)
 
     expect(serialized.id).toBe('automation.existing_automation')
-    expect(serialized.action).toContainEqual({
+    expect(serialized.actions).toContainEqual({
       service: 'light.turn_on',
       target: { entity_id: 'light.porch' },
     })
-    expect(serialized.action).toContainEqual({
+    expect(serialized.actions).toContainEqual({
       service: 'notify.mobile_app',
       data: { message: 'Edited automation action' },
     })
-    expect(serialized.action).toHaveLength(2)
+    expect(serialized.actions).toHaveLength(2)
   })
 })

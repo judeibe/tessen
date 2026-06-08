@@ -88,11 +88,11 @@ describe('flowToYaml', () => {
       alias: 'Evening lights',
       description: 'Runs every evening',
       mode: 'queued',
-      trigger: [{ platform: 'state', entity_id: 'light.kitchen', to: 'on' }],
-      condition: [
+      triggers: [{ platform: 'state', entity_id: 'light.kitchen', to: 'on' }],
+      conditions: [
         { condition: 'state', entity_id: 'binary_sensor.home', state: 'on' },
       ],
-      action: [{ service: 'notify.mobile_app', data: { message: 'hello' } }],
+      actions: [{ service: 'notify.mobile_app', data: { message: 'hello' } }],
     })
   })
 
@@ -103,9 +103,9 @@ describe('flowToYaml', () => {
         alias: 'Evening automation',
         description: 'Imported from Home Assistant',
         mode: 'queued',
-        trigger: [{ platform: 'state', entity_id: 'light.kitchen', to: 'on' }],
-        condition: [{ condition: 'time', after: '18:00:00' }],
-        action: [
+        triggers: [{ platform: 'state', entity_id: 'light.kitchen', to: 'on' }],
+        conditions: [{ condition: 'time', after: '18:00:00' }],
+        actions: [
           { service: 'light.turn_on', target: { entity_id: 'light.kitchen' } },
         ],
       }
@@ -145,14 +145,14 @@ describe('flowToYaml', () => {
     it('creates edges for multiple triggers targeting the first condition', () => {
       const yaml: HAAutomationYAML = {
         alias: 'Multi trigger',
-        trigger: [
+        triggers: [
           { platform: 'state', entity_id: 'binary_sensor.door', to: 'on' },
           { platform: 'time', at: '08:00:00' },
         ],
-        condition: [
+        conditions: [
           { condition: 'state', entity_id: 'input_boolean.away', state: 'off' },
         ],
-        action: [{ service: 'notify.notify', data: { message: 'Hello' } }],
+        actions: [{ service: 'notify.notify', data: { message: 'Hello' } }],
       }
 
       const flow = yamlToFlow(
@@ -175,8 +175,8 @@ describe('flowToYaml', () => {
     it('flags nodes with missing entity_id values as warnings', () => {
       const yaml: HAAutomationYAML = {
         alias: 'Missing entity automation',
-        trigger: [{ platform: 'state', entity_id: 'light.unknown', to: 'on' }],
-        action: [{ service: 'light.turn_on', entity_id: 'light.unknown' }],
+        triggers: [{ platform: 'state', entity_id: 'light.unknown', to: 'on' }],
+        actions: [{ service: 'light.turn_on', entity_id: 'light.unknown' }],
       }
 
       const flow = yamlToFlow(yaml, new Set(['light.kitchen']))
@@ -196,8 +196,8 @@ describe('flowToYaml', () => {
         id: 'automation-roundtrip',
         alias: 'Round trip',
         mode: 'single',
-        trigger: [{ platform: 'state', entity_id: 'light.kitchen', to: 'on' }],
-        action: [{ service: 'light.turn_on' }],
+        triggers: [{ platform: 'state', entity_id: 'light.kitchen', to: 'on' }],
+        actions: [{ service: 'light.turn_on' }],
         trace: { stored_traces: 15 },
         variables: { room: 'kitchen' },
       }
@@ -216,9 +216,9 @@ describe('flowToYaml', () => {
     it('handles empty condition array without creating condition nodes', () => {
       const yaml: HAAutomationYAML = {
         alias: 'No condition',
-        trigger: [{ platform: 'state', entity_id: 'sensor.motion', to: 'on' }],
-        condition: [],
-        action: [{ service: 'light.turn_on' }, { service: 'notify.notify' }],
+        triggers: [{ platform: 'state', entity_id: 'sensor.motion', to: 'on' }],
+        conditions: [],
+        actions: [{ service: 'light.turn_on' }, { service: 'notify.notify' }],
       }
 
       const flow = yamlToFlow(yaml, new Set(['sensor.motion']))
@@ -244,13 +244,13 @@ describe('flowToYaml', () => {
       })
     )
 
-    expect(yaml.trigger).toEqual([
+    expect(yaml.triggers).toEqual([
       { platform: 'state', entity_id: 'light.kitchen', to: 'on' },
     ])
-    expect(yaml.action).toEqual([
+    expect(yaml.actions).toEqual([
       { service: 'light.turn_on', data: { message: 'hello' } },
     ])
-    expect(yaml.condition).toBeUndefined()
+    expect(yaml.conditions).toBeUndefined()
   })
 
   it('orders trigger and action arrays using topological ordering', () => {
@@ -270,11 +270,11 @@ describe('flowToYaml', () => {
       })
     )
 
-    expect(yaml.trigger).toEqual([
+    expect(yaml.triggers).toEqual([
       { platform: 'state', entity_id: 'sensor.b', to: 'on' },
       { platform: 'state', entity_id: 'sensor.a', to: 'on' },
     ])
-    expect(yaml.action).toEqual([
+    expect(yaml.actions).toEqual([
       { service: 'notify.notify', data: { message: 'hello' } },
       { service: 'light.turn_on', data: { message: 'hello' } },
     ])

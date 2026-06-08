@@ -240,9 +240,9 @@ function App() {
       const yaml = flowToYaml(flow)
 
       const configValidation = await validateAutomationConfig(connection, {
-        trigger: yaml.trigger,
-        condition: yaml.condition,
-        action: yaml.action,
+        triggers: yaml.triggers,
+        conditions: yaml.conditions,
+        actions: yaml.actions,
       })
 
       const invalidSection = Object.entries(configValidation).find(

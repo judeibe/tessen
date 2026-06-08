@@ -15,9 +15,9 @@ const KNOWN_AUTOMATION_KEYS = new Set([
   'alias',
   'description',
   'mode',
-  'trigger',
-  'condition',
-  'action',
+  'triggers',
+  'conditions',
+  'actions',
 ])
 
 const NODE_START_X = 120
@@ -318,14 +318,14 @@ export function yamlToFlow(
   yaml: HAAutomationYAML,
   knownEntityIds: Set<string>
 ): AutomationFlow {
-  const triggerNodes = toRecordArray(yaml.trigger).map((triggerConfig, index) =>
+  const triggerNodes = toRecordArray(yaml.triggers).map((triggerConfig, index) =>
     createTriggerNode(triggerConfig, index, knownEntityIds)
   )
-  const conditionNodes = toRecordArray(yaml.condition).map(
+  const conditionNodes = toRecordArray(yaml.conditions).map(
     (conditionConfig, index) =>
       createConditionNode(conditionConfig, index, knownEntityIds)
   )
-  const actionNodes = toRecordArray(yaml.action).map((actionConfig, index) =>
+  const actionNodes = toRecordArray(yaml.actions).map((actionConfig, index) =>
     createActionNode(actionConfig, index, knownEntityIds)
   )
 
@@ -445,13 +445,13 @@ function normalizeUnknownProps(
 export function flowToYaml(flow: AutomationFlow): HAAutomationYAML {
   const orderedNodes = buildTopologicalOrder(flow.nodes, flow.edges)
 
-  const trigger = orderedNodes
+  const triggers = orderedNodes
     .filter((node) => node.type === 'trigger')
     .map(serializeTriggerNode)
-  const condition = orderedNodes
+  const conditions = orderedNodes
     .filter((node) => node.type === 'condition')
     .map(serializeConditionNode)
-  const action = orderedNodes
+  const actions = orderedNodes
     .filter((node) => node.type === 'action')
     .map(serializeActionNode)
 
@@ -459,8 +459,8 @@ export function flowToYaml(flow: AutomationFlow): HAAutomationYAML {
     ...normalizeUnknownProps(flow._unknownProps),
     alias: flow.alias,
     mode: flow.mode,
-    trigger,
-    action,
+    triggers,
+    actions,
   }
 
   if (flow.id) {
@@ -471,8 +471,8 @@ export function flowToYaml(flow: AutomationFlow): HAAutomationYAML {
     yaml.description = flow.description
   }
 
-  if (condition.length > 0) {
-    yaml.condition = condition
+  if (conditions.length > 0) {
+    yaml.conditions = conditions
   }
 
   return yaml
